@@ -8,10 +8,15 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-var redisCli client
+var redisCli Client
 
-type client interface {
+type Cmdable interface {
+	Subscribe(ctx context.Context, channels ...string) *redis.PubSub
 	redis.Cmdable
+}
+
+type Client interface {
+	Cmdable
 	Close() error
 }
 
