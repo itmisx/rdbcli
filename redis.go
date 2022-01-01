@@ -8,8 +8,6 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-var redisCli Client
-
 type Cmdable interface {
 	Subscribe(ctx context.Context, channels ...string) *redis.PubSub
 	redis.Cmdable
@@ -37,8 +35,8 @@ type Config struct {
 	MaxConnAge int `mapstructure:"max_conn_age"`
 }
 
-// redis初始化客户端
-func RedisInit(conf Config) {
+// New
+func New(conf Config) Client {
 	config := conf
 	ctx := context.Background()
 	hostMembers := strings.Split(config.Host, ",")
@@ -75,8 +73,7 @@ func RedisInit(conf Config) {
 		if strings.ToLower(res) != "pong" || err != nil {
 			panic("redis init failed!")
 		}
-		redisCli = rdb
-		return
+		return rdb
 	}
 	// 集群
 	rdb := redis.NewClusterClient(&redis.ClusterOptions{
@@ -91,14 +88,5 @@ func RedisInit(conf Config) {
 	if strings.ToLower(res) != "pong" || err != nil {
 		panic("redis init failed!")
 	}
-	redisCli = rdb
-}
-
-// 获取redis cli对象
-func Cli() redis.Cmdable {
-	return redisCli
-}
-
-func Close() {
-	redisCli.Close()
+	return rdb
 }

@@ -32,7 +32,7 @@ type Config struct {
 #### 使用
 
 ```go
-rdbcli.RedisInit()
+cli:=rdbcli.New(config)
 rdbcli.Cli.Cmd()
 ```
 
